@@ -1,0 +1,2 @@
+# Config server defines everything, even the Eureka IP
+spring_cloud_config_uri=http://172.17.0.3:8888
