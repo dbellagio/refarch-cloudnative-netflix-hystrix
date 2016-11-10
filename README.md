@@ -9,22 +9,22 @@ High level overview of setup (note, spring-config, netflix-eureka, and netflix-z
 
 Currently there is a known issue related to getting Hystrix data through Zuul.  For this reason, we will create a public route to view our Hystrix dashboard. The containers listed in this scenario were built from these GitHub repos:
 
-- RESILIENCY branch from these repos
+# RESILIENCY branch from these repos
 
--- https://github.com/dbellagio/refarch-cloudnative-netflix-turbine
--- https://github.com/dbellagio/refarch-cloudnative-wfd-menu
--- https://github.com/dbellagio/refarch-cloudnative-wfd-ui
--- https://github.com/ibm-cloud-architecture/refarch-cloudnative-wfd-appetizer
--- https://github.com/ibm-cloud-architecture/refarch-cloudnative-wfd-dessert
--- https://github.com/ibm-cloud-architecture/refarch-cloudnative-wfd-entree
--- https://github.com/ibm-cloud-architecture/refarch-cloudnative-spring-config
--- https://github.com/ibm-cloud-architecture/refarch-cloudnative-netflix-eureka
--- https://github.com/ibm-cloud-architecture/refarch-cloudnative-netflix-zuul
+- https://github.com/dbellagio/refarch-cloudnative-netflix-turbine
+- https://github.com/dbellagio/refarch-cloudnative-wfd-menu
+- https://github.com/dbellagio/refarch-cloudnative-wfd-ui
+- https://github.com/ibm-cloud-architecture/refarch-cloudnative-wfd-appetizer
+- https://github.com/ibm-cloud-architecture/refarch-cloudnative-wfd-dessert
+- https://github.com/ibm-cloud-architecture/refarch-cloudnative-wfd-entree
+- https://github.com/ibm-cloud-architecture/refarch-cloudnative-spring-config
+- https://github.com/ibm-cloud-architecture/refarch-cloudnative-netflix-eureka
+- https://github.com/ibm-cloud-architecture/refarch-cloudnative-netflix-zuul
 
-- MASTER branch from these repos
+# MASTER branch from these repos
 
--- https://github.com/dbellagio/refarch-cloudnative-netflix-hystrix 
--- https://github.com/dbellagio/wfd-menu-config
+- https://github.com/dbellagio/refarch-cloudnative-netflix-hystrix 
+- https://github.com/dbellagio/wfd-menu-config
 
 ## CloudAMQP Bluemix service
 
