@@ -1,4 +1,4 @@
-### refarch-cloudnative-netflix-hystrix
+# refarch-cloudnative-netflix-hystrix
 
 This is a version of the Netflix Hystrix component that will be used to monitor the What's for Dinner microservice application.   The documentation within this component will walk you through the entire process to startup your What's for Dinner environment and use the Hystrix dashboard.  The other components referenced here have their own README.md files, but you can use this one as a sample guide for an end to end setup.
 
@@ -9,7 +9,7 @@ High level overview of setup (note, spring-config, netflix-eureka, and netflix-z
 
 Currently there is a known issue related to getting Hystrix data through Zuul.  For this reason, we will create a public route to view our Hystrix dashboard. The containers listed in this scenario were built from these GitHub repos:
 
-# RESILIENCY branch from these repos
+### RESILIENCY branch from these repos
 
 - https://github.com/dbellagio/refarch-cloudnative-netflix-turbine
 - https://github.com/dbellagio/refarch-cloudnative-wfd-menu
@@ -21,7 +21,7 @@ Currently there is a known issue related to getting Hystrix data through Zuul.  
 - https://github.com/ibm-cloud-architecture/refarch-cloudnative-netflix-eureka
 - https://github.com/ibm-cloud-architecture/refarch-cloudnative-netflix-zuul
 
-# MASTER branch from these repos
+### MASTER branch from these repos
 
 - https://github.com/dbellagio/refarch-cloudnative-netflix-hystrix 
 - https://github.com/dbellagio/wfd-menu-config
@@ -38,7 +38,7 @@ Under the Manage tab, open the CloudAMQP dashboard to view your credentials for 
 
 ![CloudAMQP Credentials](static/imgs/RabbitMQDashboard.png?raw=true)
 
-### Startup services and test locally using Docker
+# Startup services and test locally using Docker
 
 This section describes how to start up the microservices locally using local Docker commands.   It is always a good idea to be able to setup and debug environments locally before committing them to a Bluemix space if you can.  We assume you have everything built that is needed to standup the What's For Dinner application.   You can look at the script located in the file startlocal_microservices.sh.   This shows examples of how to run all the containers locally.  Note, if using this script, you must startup eureka first, and get the container IP of Eureka to pass into the Config Server and other services.   You will also need to set this value into your Config Server's application.yml file as some of the microservices in this example get their Eureka value from the Config Server through its configured GitHub repository.  This example sets that to: https://github.com/dbellagio/wfd-menu-config
 You will want to use a different configuration for your setup.
@@ -158,7 +158,7 @@ At this time, you can play around with failing various services to see how it ef
 
 ![Hystrix Dashboard - failure of menu service](static/imgs/HystrixDashboardServiceFailure.png?raw=true)
 
-### Running the same stack in Bluemix Public
+# Running the same stack in Bluemix Public
 
 This section will describe the process for running the same stack within Bluemix Public.
 
@@ -315,7 +315,3 @@ After your testing, you may want to remove the public route to your service.  Yo
 - cf ic route unmap -n super-wfd-ui-dev -d mybluemix.net wfd-ui
  
 You can also look a the script "kill-remote-services.sh" to bring down the entire stack.
-
-
-
-
