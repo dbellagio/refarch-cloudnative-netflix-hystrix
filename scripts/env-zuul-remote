@@ -1,4 +1,4 @@
-eureka_client_serviceUrl_defaultZone=http://172.31.1.4:8761/eureka
+eureka_client_serviceUrl_defaultZone=http://172.31.1.28:8761/eureka
 # eureka_client_serviceUrl_defaultZone=http://super-eureka-dev.mybluemix.net/eureka
 # eureka.instance.hostname=super-zuul-dev.mybluemix.net
 # eureka.instance.nonSecurePort=80
