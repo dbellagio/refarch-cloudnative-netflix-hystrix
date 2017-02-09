@@ -1,4 +1,0 @@
-# just pass in Eureka and where to get the config from
-eureka_client_serviceUrl_defaultZone=http://172.31.1.28:8761/eureka
-spring_cloud_config_server_git_uri=https://github.com/dbellagio/wfd-menu-config
-# eureka_client_serviceUrl_defaultZone=http://localhost:8761/eureka
