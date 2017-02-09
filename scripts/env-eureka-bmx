@@ -1,0 +1,1 @@
+eureka_client_serviceUrl_defaultZone=http://172.31.1.164:8761/eureka
