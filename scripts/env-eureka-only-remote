@@ -1,2 +1,0 @@
-eureka_client_serviceUrl_defaultZone=http://172.31.1.28:8761/eureka
-spring_rabbitmq_addresses=amqp://jcgxdkoe:MwAkhCGd5odWxeXnwOGTk7qqKJ2IrwEc@white-swan.rmq.cloudamqp.com/jcgxdkoe
