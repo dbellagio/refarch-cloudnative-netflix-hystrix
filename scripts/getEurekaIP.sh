@@ -2,7 +2,7 @@ CONTAINER_ID=$(cf ic ps -a | grep netflix-eureka:dev | awk '{print $1;}' )
 EUREKA_IP=$( cf ic inspect ${CONTAINER_ID} | grep loadbalancer_vip | awk -F"=" '{print $2}' | awk -F"\"" '{print $1}' )
 echo "Eureka IP is: " ${EUREKA_IP}
 
-CONFIG_CONTAINER_ID=$(cf ic ps -a | grep netflix-eureka:dev | awk '{print $1;}' )
+CONFIG_CONTAINER_ID=$(cf ic ps -a | grep spring-config:dev | awk '{print $1;}' )
 CONFIG_IP=$( cf ic inspect ${CONFIG_CONTAINER_ID} | grep loadbalancer_vip | awk -F"=" '{print $2}' | awk -F"\"" '{print $1}' )
 echo "Config Server IP is: " ${CONFIG_IP}
 
