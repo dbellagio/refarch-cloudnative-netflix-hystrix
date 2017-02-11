@@ -66,7 +66,7 @@ echo "spring_cloud_config_uri=http://${SPRING_CONFIG_IP}:8888" >> ${MICROSERVICE
 
 echo "create group for the backend micro services and pass in config server load balancer IP and the Eureka load balancer IP, I've removed Eureka from the Config Server"
 echo "appetizer"
-cf ic group create --name appetizer -p 8082 -m 512 --min 1 --max 2 --desired 1 --env-file ${MICROSERVICE_ENV_FILE} registry.ng.bluemix.net/supercontainers/wfd-appetizer:dev
+cf ic group create --name appetizer -p 8082 -m 256 --min 1 --max 2 --desired 1 --env-file ${MICROSERVICE_ENV_FILE} registry.ng.bluemix.net/supercontainers/wfd-appetizer:dev
 
 echo "sleeping 20"
 sleep 20 
