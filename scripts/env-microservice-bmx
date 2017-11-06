@@ -1,3 +1,0 @@
-# just pass in Eureka and the Config Server info
-eureka_client_serviceUrl_defaultZone=http://172.31.1.164:8761/eureka
-spring_cloud_config_uri=http://172.31.1.166:8888

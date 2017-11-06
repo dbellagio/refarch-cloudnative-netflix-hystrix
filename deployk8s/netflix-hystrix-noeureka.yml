@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: netflix-hystrix-pod
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: netflix-hystrix-pod
+      labels:
+        run: netflix-hystrix-wfd
+    spec:
+      containers:
+        - name: netflix-hystrix
+          image: "registry.ng.bluemix.net/supercontainers/netflix-hystrix:dev"
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: spring_zipkin_baseUrl
+            value: http://zipkin-service:9411 
+          - name: eureka_client_enabled
+            value: "false"
+      imagePullSecrets:
+        - name: supercontainers-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: netflix-hystrix-service
+spec:
+  type: NodePort
+  selector:
+    run: netflix-hystrix-wfd
+  ports:
+   - protocol: TCP
+     port: 8383
+     nodePort: 30383

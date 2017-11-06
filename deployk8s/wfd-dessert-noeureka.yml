@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wfd-dessert-pod
+spec:
+  replicas: 3
+  template:
+    metadata:
+      name: wfd-dessert-pod
+      labels:
+        run: wfd-dessert-wfd
+    spec:
+      containers:
+        - name: wfd-dessert
+          image: "registry.ng.bluemix.net/supercontainers/wfd-dessert:dev"
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: spring_zipkin_baseUrl
+            value: http://zipkin-service:9411 
+          - name: eureka_client_enabled
+            value: "false"
+          - name: spring_cloud_config_uri
+            value: http://spring-config-service:8888
+      imagePullSecrets:
+        - name: supercontainers-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dessert-service
+spec:
+  type: ClusterIP
+  selector:
+    run: wfd-dessert-wfd
+  ports:
+   - protocol: TCP
+     port: 8083

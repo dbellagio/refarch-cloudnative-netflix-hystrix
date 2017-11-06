@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wfd-ingress
+spec:
+  rules:
+  - host: mbfs-dev.us-south.containers.mybluemix.net
+    http:
+      paths:
+      - path: /appetizers
+        backend:
+          serviceName: appetizer-service
+          servicePort: 8082
+      - path: /desserts
+        backend:
+          serviceName: dessert-service
+          servicePort: 8083
+      - path: /entrees
+        backend:
+          serviceName: entree-service
+          servicePort: 8081
+      - path: /menu
+        backend:
+          serviceName: menu-service
+          servicePort: 8180
+      - path: /
+        backend:
+          serviceName: wfd-ui-service
+          servicePort: 8181
