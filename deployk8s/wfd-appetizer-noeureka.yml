@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wfd-appetizer-pod
+spec:
+  replicas: 3
+  template:
+    metadata:
+      name: wfd-appetizer-pod
+      labels:
+        run: wfd-appetizer-wfd
+    spec:
+      containers:
+        - name: wfd-appetizer
+          image: "registry.ng.bluemix.net/supercontainers/wfd-appetizer:dev"
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: spring_zipkin_baseUrl
+            value: http://zipkin-service:9411 
+          - name: eureka_client_enabled
+            value: "false"
+          - name: spring_cloud_config_uri
+            value: http://spring-config-service:8888
+      imagePullSecrets:
+        - name: supercontainers-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appetizer-service
+spec:
+  type: ClusterIP
+  selector:
+    run: wfd-appetizer-wfd
+  ports:
+   - protocol: TCP
+     port: 8082

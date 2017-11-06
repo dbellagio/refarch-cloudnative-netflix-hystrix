@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wfd-ui-pod
+spec:
+  replicas: 3
+  template:
+    metadata:
+      name: wfd-ui-pod
+      labels:
+        run: wfd-ui-wfd
+    spec:
+      containers:
+        - name: wfd-ui
+          image: "docker.io/dbellagio/wfd-ui-bff:k8s"
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: spring_zipkin_baseUrl
+            value: http://zipkin-service:9411 
+          - name: eureka_client_enabled
+            value: "false"
+          - name: spring_rabbitmq_host
+            value: "sl-us-south-1-portal.1.dblayer.com"
+          - name: spring_rabbitmq_port
+            value: "19377"
+          - name: spring_rabbitmq_virtual_host
+            value: "bmix-dal-yp-4ed4b738-3c50-4a84-8b84-5a624ff7b9d3"
+          - name: spring_rabbitmq_username
+            value: "admin"
+          - name: spring_rabbitmq_password
+            value: "KLFMSPHWWOAUENGQ"
+          - name: spring_rabbitmq_ssl_enabled
+            value: "true"
+          - name: spring_rabbitmq_ssl_algorithm
+            value: "TLSv1.2"
+      imagePullSecrets:
+        - name: supercontainers-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wfd-ui-service
+spec:
+  type: ClusterIP
+  selector:
+    run: wfd-ui-wfd
+  ports:
+   - protocol: TCP
+     port: 8181

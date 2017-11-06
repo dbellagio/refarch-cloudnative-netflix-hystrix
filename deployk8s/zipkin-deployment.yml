@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: zipkin-pod
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: zipkin-pod
+      labels:
+        run: zipkin-wfd
+    spec:
+      containers:
+        - name: zipkin 
+          image: "registry.ng.bluemix.net/supercontainers/zipkin:dev"
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: eureka_client_enabled
+            value: "false"
+      imagePullSecrets:
+        - name: supercontainers-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zipkin-service
+spec:
+  type: NodePort
+  selector:
+    run: zipkin-wfd
+  ports:
+   - protocol: TCP
+     port: 9411
+     nodePort: 30411
