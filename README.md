@@ -2,7 +2,11 @@
 
 This is a version of the Netflix Hystrix component that will be used to monitor the What's For Dinner (WFD) microservice application.   The documentation within this component will walk you through the entire process to startup your What's For Dinner environment and use the Hystrix dashboard.  The other components referenced here have been built from the noted branch.  You can refer to their README.md file for more info.  
 
-## Using Turbine Stream with the Compose RabbitMQ or CloudAMQP service on Bluemix Public
+Important Note: This repo has been updated to reflect the new IBM Cloud Container service, based on Kubernetes.  The 
+What's for Dinner app can run as-is with Kubernetes as described here.  But, the deployment is easier as we have removed
+the need for Zuul and Eureka.  Instead we use the native Kubernetes networking to allow ingress and service discovery.
+
+## Using Turbine Stream with the Compose RabbitMQ or CloudAMQP service on IBM Cloud Public
 
 Logical Architecture
 ![Hystrix with Turbine Stream and RabbitMQ](static/imgs/WhatsForDinner-Netflix-OSS.png?raw=true)
@@ -20,17 +24,18 @@ Currently there is a known issue related to getting Hystrix data through Zuul.  
 - https://github.com/ibm-cloud-architecture/refarch-cloudnative-spring-config
 - https://github.com/ibm-cloud-architecture/refarch-cloudnative-netflix-eureka
 - https://github.com/ibm-cloud-architecture/refarch-cloudnative-netflix-zuul
+- https://github.com/ibm-cloud-architecture/refarch-cloudnative-zipkin
 
 ### MASTER branch from these repos
 
 - https://github.com/dbellagio/refarch-cloudnative-netflix-hystrix 
 - https://github.com/dbellagio/wfd-menu-config
 
-## CloudAMQP Bluemix service
+## CloudAMQP IBM Cloud service
 
-From Bluemix Public, create an instance of the CloudAMQP service and leave it unbound.
+From IBM Cloud Public, create an instance of the CloudAMQP service and leave it unbound.
 
-![CloudAMQP service in Bluemix](static/imgs/CloudAMQP.png?raw=true)
+![CloudAMQP service in IBM Cloud](static/imgs/CloudAMQP.png?raw=true)
 
 Under the Manage tab, open the CloudAMQP dashboard to view your credentials for the service.  You are interested in the value of the URL field.  Also note the username and password fields for checking later that your microservices are connecting to this service.  The value of URL will be injected into the netflix-turbine, wfd-menu, and wfd-ui containers as they startup through this environment variable (example shown here):
 
@@ -40,19 +45,37 @@ Note: The free service of the CloudAMQP will fill up and lock if you leave this 
 
 ![CloudAMQP Credentials](static/imgs/RabbitMQDashboard.png?raw=true)
 
+## Updates for Compose RabbitMQ and using IBM Cloud GitHub Enterprise with your Spring Config Server
+
+Note: If using the Compose RabbitMQ service as part of IBM Cloud, you should use these properties instead of the spring_rabbitmq_addresses set above. These values can be deduced from your connection credentials for the service:
+
+- spring.rabbitmq.host=abcdef-dal22-tr0.0.compose.direct
+- spring.rabbitmq.port=15130
+- spring.rabbitmq.virtual-host=bmx_rmq_17feb03t1955_b33_be9f
+- spring.rabbitmq.username=admin
+- spring.rabbitmq.password=XYZXYZ
+- spring.rabbitmq.ssl.enabled=true
+- spring.rabbitmq.ssl.algorithm=TLSv1.2
+
+One other update Note.  When starting your Spring Config server, if you have it backed by a IBM Cloud GitHub Enterprise, you need to add in additional setting for Spring to login. To do this, grant a token for you GitHub Enterprise, and assign the token to the Spring git username property as follows:
+
+- spring_cloud_config_server_git_uri=https://github.ibm.com/someorg/wfd-menu-cfg
+- spring_cloud_config_server_git_username=662b86dca94a59AGITTOKENdde1a40a6e340bc920
+- spring_cloud_config_server_git_password=x-oauth-basic
+
 # Startup services and test locally using Docker
 
-This section describes how to start up the microservices locally using local Docker commands.   It is always a good idea to be able to setup and debug environments locally before committing them to a Bluemix space if you can.  We assume you have everything built that is needed to standup the What's For Dinner application.   You can look at the script located in the file startlocal_microservices.sh.   This shows examples of how to run all the containers locally.  Note, if using this script, you must startup eureka first, and get the container IP of Eureka to pass into the Config Server and other services.   You will also need to set this value into your Config Server's application.yml file as some of the microservices in this example get their Eureka value from the Config Server through its configured GitHub repository.  This example sets that to: https://github.com/dbellagio/wfd-menu-config
+This section describes how to start up the microservices locally using local Docker commands.   It is always a good idea to be able to setup and debug environments locally before committing them to a IBM Cloud space if you can.  We assume you have everything built that is needed to standup the What's For Dinner application.   You can look at the script located in the file startlocal_microservices.sh.   This shows examples of how to run all the containers locally.  Note, if using this script, you must startup eureka first, and get the container IP of Eureka to pass into the Config Server and other services.   You will also need to set this value into your Config Server's application.yml file as some of the microservices in this example get their Eureka value from the Config Server through its configured GitHub repository.  This example sets that to: https://github.com/dbellagio/wfd-menu-config
 You will want to use a different configuration for your setup.
 
 The following sections are taken from the above noted script.  You will have to adjust the IP addresses to match your environment.   A few notes:
 
 - Use "docker ps -a" to get a list of running containers
 - Use "docker inspect" on a container to get its assigned IP address
-- When using Bluemix and container groups, use the IP address of the load balancer IP of the container groups
-- When using Bluemix container groups, give some time for certain container groups to be completely started (Eureka, Config Server) to avoid errors in the log files
+- When using IBM Cloud and container groups, use the IP address of the load balancer IP of the container groups
+- When using IBM Cloud container groups, give some time for certain container groups to be completely started (Eureka, Config Server) to avoid errors in the log files
 
-To run this scenario below, I used a 10GB Linux Ubuntu image running Docker.  I left most of the services using the default container image of 1GB, as I ran into problems when I adjust the memory lower, except for the services where I used 756M in the commands below.  I believe this is due to my Docker environment, as I get a warning that swap is not enabled when I set the memory lower, which may explain why it fails when I set it too low.   When running in Bluemix, this limitation is not present.
+To run this scenario below, I used a 10GB Linux Ubuntu image running Docker.  I left most of the services using the default container image of 1GB, as I ran into problems when I adjust the memory lower, except for the services where I used 756M in the commands below.  I believe this is due to my Docker environment, as I get a warning that swap is not enabled when I set the memory lower, which may explain why it fails when I set it too low.   When running in IBM Cloud, this limitation is not present.
 
 ## Startup Eureka first and set the Eureka container IP address
 
@@ -183,191 +206,75 @@ The default menu entries are shown here.  That is, if any of the backend microse
 
 ![Circuit Breaker menu items](static/imgs/WFD-CircuitBreakEntries.png?raw=true)
 
-# Running the same stack in Bluemix Public
+# Running the same stack in IBM Cloud Public
 
-This section will describe the process for running the same stack within Bluemix Public.
+This section will describe the process for running the same stack within IBM Cloud Public.
 
-## Getting your images up to Bluemix
+## Getting your images up to IBM Cloud
 
-You need to initialize your Bluemix space for containers.  You normally get 2GB space setup in your initial space setup.  This may not be enough.  You can try to crank the memory down, but if you see failures its most likely due to not enough memory in the container.  I am using a space allocated with 6GB container memory for this test.  Thre are two ways to get your images up to Bluemix Public:
-
-- first initialize your shell with "cf ic init"
-
-then
-
-- Tag your image with your Bluemix container registry namespace and then use "cf push" to push the entire container from your local Docker up to Bluemix
-
-or
-
-- Use "cf ic build" to build your image and give it a tag of your registery namespace.  This option will send up less info and build the container in Bluemix
-- Example (this will send my build context to my registry in Bluemix public US, build the image and tag it "dev"):
--- cd ~/ibm-cloud-architecture/refarch-cloudnative-wfd-appetizer/docker
--- cf ic build -t registry.ng.bluemix.net/supercontainers/wfd-appetizer:dev .
+This section has been update to reflect deployment into Kubernetes.  It also assumes your images are pushed up to your IBM Cloud registry or some other place where they can be pulled from the IBM Cloud contatiner service.
 
 You can refer to the various GitHub repositories used here for more info.
 
-![Bluemix images](static/imgs/BluemixImages.png?raw=true)
+![IBM Cloud images](static/imgs/BluemixImages.png?raw=true)
 
-## Deploy to Bluemix Public
+## Deploy to IBM Cloud Public
 
-Normally, as we commit changes to our various repos, we would execute a Bluemix toolchain to automate the build, deployment, run tests, etc.  We will not cover toolchains here. For a great overview of deploying this stack using a Bluemix Toolchain, refer to: https://github.com/ibm-cloud-architecture/refarch-cloudnative-wfd-devops-containers/tree/RESILIENCY  
+This section will describe the commands used to deploy the services on IBM Cloud.  Here are some of the differences from running local in Docker:
 
-There is also a shell script I created in the scripts directory called: 
-- deploy-bx-us.sh
+- We will be using IBM Cloud container service to allow for easily running multiple instances of each service.  In this example, we use Kubernetes deployments to dictate the number of instances of each service that will be run.
 
-This shell script automates a deployment into Bluemix of the stack using just the container commands.  To execute it:
-- cd scripts
-- review the deploy-bx-us.sh script before executing as you need to set your AMQP credentials correctly
-- ./deploy-bx-us.sh
+- We will use a single container for Turbine as this single container's Kubernetes service is used in the Hystrix dashboard's turbine stream entry.
 
-This section will describe the commands used to deploy the services on Bluemix.  Here are some of the differences from running local in Docker:
+- We will access the public route to view the wfd-ui service through the Kubernetes Ingress
 
-- We will be using Bluemix container groups to allow for easily running multiple instances of each service.  In this example, we just run one instance in a group, but you can adjust to play around as needed.
-
-- We will use a public IP and bind it to our Hystrix container to view the dashboard.  Viewing this through zuul or a Cloud Foundry route adds delay that causes browser performance issues.
-
-- We will use a single container for Turbine as this single IP is used in the Hystrix dashboard's turbine stream entry.
-
-- We will only create a public route to view the wfd-ui container group through the zuul proxy. 
-
-- When taking the container IP address for Eureka and Spring Config, use the load balancer IP from the container, rather than the specific container IP, since these are now in container groups
-
-- We will be using the images with the "dev" tag that we built and pushed up to Bluemix public
+- We will be using the images from an IBM Cloud public registry as well as the Docker's public registry.   You will need to build your own images and make substitutions as appropriate
 
 Other than that, everything else is very similar to what was setup before.
 
-## Startup Eureka  
+# Kubernetes Deploy Scripts
 
-There is a script called "deploy-bx-us.sh" located in the directory "~ibm-cloud-architecture/refarch-cloudnative-netflix-hystrix/scripts" that has a complete startup sequence.  I suggest to review this script and run the services by hand using copy/paste.  Run Eureka:
+I've placed all the deployment scripts in the folder deployk8s.  In this folder, there are example yaml files and a script to deploy the workloads.
 
-- cf ic group create --name netflix-eureka -p 8761 -m 512 --min 1 --max 2 --desired 1 registry.ng.bluemix.net/supercontainers/netflix-eureka:dev
+cd deployk8s
 
-Use the "cf ic group list" command to notice how the container group gets deployed and goes through a lifecycle to get started.  Once the container is completely started, it will start executing.  You can then review the logs:
+kubectl create -f zipkin-deployment.yml
+sleep 30
+kubectl create -f spring-config-noeureka.yml
+sleep 30
+kubectl create -f wfd-appetizer-noeureka.yml
+kubectl create -f wfd-dessert-noeureka.yml
+kubectl create -f wfd-entree-noeureka.yml
+sleep 30
+kubectl create -f wfd-menu-paid2-dockerio-noribbon.yml
+sleep 30
+kubectl create -f wfd-ui-paid2-dockerio-noribbon.yml
+sleep 30
+kubectl create -f netflix-turbine-paid2-noeureka.yml
+sleep 30
+kubectl create -f netflix-hystrix-noeureka.yml
+sleep 30
+kubectl create -f wfd-ingress.yml
 
-- cf ic ps -a 
-
-Identify the container that was just started and inspect it for the load balancer IP.  Some commands that can help are:
-
-- cf ic logs <container-id>
-- cf ic inspect <container-id>
-- bx list containers
-
-Once you get the IP address of the load balancer, set it into the appropriate environment files.  These files are used in this example:
-
-- env-eureka-amqp-bmx, env-eureka-bmx, env-microservice-bmx, env-spring-config-bmx
-
-## Startup the Config Server
-
-- cd ~ibm-cloud-architecture/refarch-cloudnative-netflix-hystrix/scripts
-- cf ic group create --name spring-config -p 8888 -m 512 --min 1 --max 2 --desired 1 --env-file env-spring-config-bmx registry.ng.bluemix.net/supercontainers/spring-config:dev
-
-Just as before, get the load balancer IP address from this container after it starts and set it into this file:
-
-- env-microservice-bmx
-
-## Startup the 3 menu microservices
-
-Make sure the Config Server container group has started completely before starting up these microservices.
-
-- cd ~ibm-cloud-architecture/refarch-cloudnative-netflix-hystrix/scripts
-- cf ic group create --name appetizer -p 8082 -m 256 --min 1 --max 2 --desired 1 --env-file env-microservice-bmx registry.ng.bluemix.net/supercontainers/wfd-appetizer:dev
-- cf ic group create --name dessert -p 8083 -m 256 --min 1 --max 2 --desired 1 --env-file env-microservice-bmx registry.ng.bluemix.net/supercontainers/wfd-dessert:dev
-- cf ic group create --name entree -p 8081 -m 256 --min 1 --max 2 --desired 1 --env-file env-microservice-bmx registry.ng.bluemix.net/supercontainers/wfd-entree:dev
-
-## Startup the menu aggregation service
-
-After the 3 menu microservices startup, start the menu aggregration service.  Use "cf ic group list" to monitor the progress.  This service does not use the Config Server.  We inject the Eureka load balancer IP as well as our RabbitMQ service URL.
-
-- cd ~ibm-cloud-architecture/refarch-cloudnative-netflix-hystrix/scripts
-- cf ic group create --name menu -p 8180 -m 512 --min 1 --max 2 --desired 1 --env-file env-eureka-amqp-bmx registry.ng.bluemix.net/supercontainers/wfd-menu:dev
-
-Note, after this container gets created, you should have a connection out to your RabbitMQ service as before.
-
-## Startup the What's For Dinner UI service
-
-Make sure the menu service has started ok and has connected to RabbitMQ, and continue starting the rest of the stack. This service does not use the Config Server either.
-
-- cd ~ibm-cloud-architecture/refarch-cloudnative-netflix-hystrix/scripts
-- cf ic group create --name wfd-ui -p 8181 -m 512 --min 1 --max 2 --desired 1 --env-file env-eureka-amqp-bmx registry.ng.bluemix.net/supercontainers/wfd-ui:dev
-
-## Startup Turbine
-
-After the menu services have started, create the Turbine service.  Note, using a single container here.
-
-- cd ~ibm-cloud-architecture/refarch-cloudnative-netflix-hystrix/scripts
-- cf ic run --name netflix-turbine -p 8989 -m 512 --env-file env-eureka-amqp-bmx registry.ng.bluemix.net/supercontainers/netflix-turbine:dev
-
-Make sure you have the three connections to RabbitMQ after this service starts up.
-
-## Startup Hystrix
-
-Start up Hystrix.
-
-- cd ~ibm-cloud-architecture/refarch-cloudnative-netflix-hystrix/scripts
-- cf ic run --name netflix-hystrix -p 8383 -m 512 --env-file env-eureka-bmx registry.ng.bluemix.net/supercontainers/netflix-hystrix:dev
-
-## Startup Zuul
-
-- cd ~ibm-cloud-architecture/refarch-cloudnative-netflix-hystrix/scripts
-- cf ic group create --name netflix-zuul -p 8080 -m 512 --min 1 --max 2 --desired 1 --env-file env-eureka-bmx registry.ng.bluemix.net/supercontainers/netflix-zuul:dev
-
-Take a look at the container groups we have started.
-
-- cf ic group list
-
-Take a look at the two containers for Turbine and Hystrix:
-
-- cf ic ps -a
-
-We will create two public routes to get at both the Hystrix dashboard and also the What's For Dinner UI.  We create one route using the Cloud Foundry command and then map the route to the container group as follows for the Zuul application (use your own route names to make them unique):
-
-For the route through Zuul to the WFD UI endpoint:
-
-- cf create-route dev mybluemix.net --hostname super-zuul-dev --path whats-for-dinner
-- cf ic route map --hostname super-zuul-dev --domain mybluemix.net netflix-zuul
-
-For the IP address to Hystrix:
-
-- cf ic ip list
-
-If no public IP's are in your space, make sure some are allocated to it.  If they are allocated, request a IP
-
-- cf ic ip request
-
-Bind the IP to the container Hystrix instance:
-
-- example: cf ic bind 169.44.113.240 netflix-hystrix 
-
-At this point, we now have public routes to both the What's For Dinner UI menu and also the Hystrix dashboard.   We can now bring up the Hystrix dashboard and configure it to monitor our Turbine stream.  We will need to inspect the container for turbine and pass in its IP to give to Hystrix, similar to what we did when running locally:
-
-- cf ic ps -a
-- cf ic inspect <container id of turbine>
+# Hystrix
 
 Bring up a browser to Hystrix and configure to monitor the Turbine stream.  Note that since we bound a public IP to the container, we still need to port in the URL.  Example: 
 
-- http://169.44.113.240:8383/hystrix/monitor?stream=http%3A%2F%2F172.31.1.182%3A8989%2Fturbine%2Fturbine.stream
+- http://<custer-public-ip>:30383/hystrix/monitor?stream=http%3A%2F%2Fnetflix-turbine-service%3A8989%2Fturbine%2Fturbine.stream
 
-![Hystrix dashboard in Bluemix](static/imgs/BluemixHystrixConfigure.png?raw=true)
+![Hystrix dashboard in IBM Cloud](static/imgs/BluemixHystrixConfigure.png?raw=true)
 
-Bring up a browser to the WFD UI.  Since we mapped a route to the zuul container group, we do not need to specify a port in the URL.  Example:
+Bring up a browser to the WFD UI.  Since we mapped a route though the Kubernetes ingess we do not need to specify a port in the URL.  Example:
 
-- http://super-zuul-dev.mybluemix.net/whats-for-dinner 
+- http://your-ibm-cloud-cluster/whats-for-dinner 
+- http://your-ibm-cloud-cluster/menu
+- http://your-ibm-cloud-cluster/entrees
+- http://your-ibm-cloud-cluster/appetizers
+- http://your-ibm-cloud-cluster/desserts
 
-![WFD in Bluemix](static/imgs/Bluemix-wfd-ui.png?raw=true)
+![WFD in IBM Cloud](static/imgs/Bluemix-wfd-ui.png?raw=true)
 
-Put some load on the menu route by adjusting the script "loadMenu-remote.sh" and running it in a shell window.  You can now view the Hystrix dashboard in Bluemix with some load on the services.
+Put some load on the menu route by adjusting the script "loadMenu-remote.sh" and running it in a shell window.  You can now view the Hystrix dashboard in IBM Cloud with some load on the services.
 
-![Hystrix dashboard in Bluemix](static/imgs/BluemixHystrixLoad.png?raw=true)
+![Hystrix dashboard in IBM Cloud](static/imgs/BluemixHystrixLoad.png?raw=true)
 
-Feel free to now experiment with failing services and checking the dashboard, etc.   To bring down the container groups, you just need to issue this command:
-
-- cf ic group rm wfd-entree
-
-The above command will bring down the entree service.  This also removes the container.
-
-After your testing, you may want to remove the public route to your service.  You can leave the route in your CF space and simply unmap it from the container group.  You can also delete the route after unmapping.   Removing the container group will unmap the route as the container group is gone.
-
-- cf ic ip unbind <IP-Address> netflix-hystrix
-- cf ic route unmap --hostname super-zuul-dev --domian mybluemix.net netflix-zuul
- 
-You can also look a the script "kill-remote-services.sh" to bring down the entire stack.

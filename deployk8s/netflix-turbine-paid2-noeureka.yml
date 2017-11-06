@@ -28,7 +28,7 @@ spec:
           - name: spring_rabbitmq_username
             value: "admin"
           - name: spring_rabbitmq_password
-            value: "KLFMSPHWWOAUENGQ"
+            value: "XXXXXXXXX"
           - name: spring_rabbitmq_ssl_enabled
             value: "true"
           - name: spring_rabbitmq_ssl_algorithm
