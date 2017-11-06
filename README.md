@@ -236,31 +236,31 @@ Other than that, everything else is very similar to what was setup before.
 
 I've placed all the deployment scripts in the folder deployk8s.  In this folder, there are example yaml files and a script to deploy the workloads.
 
-cd deployk8s
+ - cd deployk8s
 
-kubectl create -f zipkin-deployment.yml
-sleep 30
-kubectl create -f spring-config-noeureka.yml
-sleep 30
-kubectl create -f wfd-appetizer-noeureka.yml
-kubectl create -f wfd-dessert-noeureka.yml
-kubectl create -f wfd-entree-noeureka.yml
-sleep 30
-kubectl create -f wfd-menu-paid2-dockerio-noribbon.yml
-sleep 30
-kubectl create -f wfd-ui-paid2-dockerio-noribbon.yml
-sleep 30
-kubectl create -f netflix-turbine-paid2-noeureka.yml
-sleep 30
-kubectl create -f netflix-hystrix-noeureka.yml
-sleep 30
-kubectl create -f wfd-ingress.yml
+ - kubectl create -f zipkin-deployment.yml
+ - sleep 30
+ - kubectl create -f spring-config-noeureka.yml
+ - sleep 30
+ - kubectl create -f wfd-appetizer-noeureka.yml
+ - kubectl create -f wfd-dessert-noeureka.yml
+ - kubectl create -f wfd-entree-noeureka.yml
+ - sleep 30
+ - kubectl create -f wfd-menu-paid2-dockerio-noribbon.yml
+ - sleep 30
+ - kubectl create -f wfd-ui-paid2-dockerio-noribbon.yml
+ - sleep 30
+ - kubectl create -f netflix-turbine-paid2-noeureka.yml
+ - sleep 30
+ - kubectl create -f netflix-hystrix-noeureka.yml
+ - sleep 30
+ - kubectl create -f wfd-ingress.yml
 
 # Hystrix
 
 Bring up a browser to Hystrix and configure to monitor the Turbine stream.  Note that since we bound a public IP to the container, we still need to port in the URL.  Example: 
 
-- http://<custer-public-ip>:30383/hystrix/monitor?stream=http%3A%2F%2Fnetflix-turbine-service%3A8989%2Fturbine%2Fturbine.stream
+- http://custer-public-ip:30383/hystrix/monitor?stream=http%3A%2F%2Fnetflix-turbine-service%3A8989%2Fturbine%2Fturbine.stream
 
 ![Hystrix dashboard in IBM Cloud](static/imgs/BluemixHystrixConfigure.png?raw=true)
 
@@ -271,8 +271,6 @@ Bring up a browser to the WFD UI.  Since we mapped a route though the Kubernetes
 - http://your-ibm-cloud-cluster/entrees
 - http://your-ibm-cloud-cluster/appetizers
 - http://your-ibm-cloud-cluster/desserts
-
-![WFD in IBM Cloud](static/imgs/Bluemix-wfd-ui.png?raw=true)
 
 Put some load on the menu route by adjusting the script "loadMenu-remote.sh" and running it in a shell window.  You can now view the Hystrix dashboard in IBM Cloud with some load on the services.
 
